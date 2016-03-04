@@ -4,10 +4,6 @@
  */
 package es.rickyepoderi.wbxml.test;
 
-import es.rickyepoderi.wbxml.definition.WbXmlDefinition;
-import es.rickyepoderi.wbxml.document.WbXmlEncoder;
-import es.rickyepoderi.wbxml.stream.WbXmlInputFactory;
-import es.rickyepoderi.wbxml.stream.WbXmlOutputFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -15,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.util.List;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -33,11 +30,19 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stax.StAXResult;
 import javax.xml.transform.stax.StAXSource;
+
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.testng.Assert;
 import org.w3c.dom.Document;
+
+import com.sun.org.apache.xalan.internal.utils.XMLSecurityManager;
+
+import es.rickyepoderi.wbxml.definition.WbXmlDefinition;
+import es.rickyepoderi.wbxml.document.WbXmlEncoder;
+import es.rickyepoderi.wbxml.stream.WbXmlInputFactory;
+import es.rickyepoderi.wbxml.stream.WbXmlOutputFactory;
 
 /**
  *
@@ -84,13 +89,16 @@ public class GenericDirectoryTester {
         try {
             in = new FileInputStream(f);
             DocumentBuilderFactory domFact = DocumentBuilderFactory.newInstance();
+          
             domFact.setNamespaceAware(true);
             domFact.setIgnoringElementContentWhitespace(true);
             domFact.setIgnoringComments(true);
-            domFact.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            domFact.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true);
+          
             DocumentBuilder domBuilder = domFact.newDocumentBuilder();
             Document doc = domBuilder.parse(in);
-            doc.normalizeDocument();
+            doc.normalize();
+          //  doc.normalizeDocument();
             return doc;
         } finally {
             if (in != null) {
@@ -316,6 +324,7 @@ public class GenericDirectoryTester {
                     f.getName(), result? "OK" : "ERROR"));
             return result;
         } catch (Exception e) {
+        	e.printStackTrace();
             System.out.println(String.format("Testing file '%s' = ERROR (%s)", 
                     f.getName(), e.getMessage()));
             return false;
