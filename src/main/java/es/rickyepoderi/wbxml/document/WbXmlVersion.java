@@ -61,7 +61,7 @@ public enum WbXmlVersion {
     /**
      * Version 1.1
      */
-    VERSION_1_1((byte)1, (byte)0),
+    VERSION_1_1((byte)1, (byte)1),
     
     /**
      * Version 1.2
